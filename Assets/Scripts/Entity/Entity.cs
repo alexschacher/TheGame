@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
+// NOTE!! Consider refactoring, its becoming too large! Risk of God-Object!
+
 public class Entity : MonoBehaviour
 {
     public enum Alignment

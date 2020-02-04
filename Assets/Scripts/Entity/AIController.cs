@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+// NOTE!! Consider refactoring, its becoming too large! Risk of God-Object!
+
 public class AIController : MonoBehaviour
 {
     private Entity thisEntity;
