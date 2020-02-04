@@ -1,0 +1,4 @@
+Base path: 'D:/Unity/2019.2.11f1/Editor/Data', plugins path 'D:/Unity/2019.2.11f1/Editor/Data/PlaybackEngines'
+Cmd: initializeCompiler
+Cmd: disassembleShader
+  api=4 insize=858 outsize=1793 ok=1
