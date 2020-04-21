@@ -1,329 +1,96 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-
-// NOTE!! Consider refactoring, its becoming too large! Risk of God-Object!
 
 public class Entity : MonoBehaviour
 {
-    public enum Alignment
-    {
-        Player, Civilized, Monster
-    }
-    public enum Disposition
-    {
-        Allied, Neutral, Enemy, Hostile
-    }
-
-    [Header("")]
-    [SerializeField] private Alignment alignment = Alignment.Monster;
-    [SerializeField] private Disposition dispositionMonster = Disposition.Neutral;
-    [SerializeField] private Disposition dispositionPlayer = Disposition.Neutral;
-    [SerializeField] private Disposition dispositionCivilized = Disposition.Neutral;
-
-    [Header("")]
-    [SerializeField] private int threatLevel = 3;
-    [SerializeField] private int threatBraveness = 3;
-    [SerializeField] private float maxHealth = 100;
-    [SerializeField] private float walkSpeed = 250;
-
-    private float jumpPower = 5;
-    private float pushbackSpeed = 1200f;
-    private float pushbackTime = 0.2f;
-    private float stunTime = 0.2f;
-    private float invulnerableTime = 0.2f;
-    private float attackLength = 0.2f;
-
-    private Text debugText;
-    private Rigidbody rb;
-    private Collider col;
-    private EntityAnimator animator;
-    public UnityAction<Entity> eventDamagedByEntity;
-
-    private bool isAttacking = false;
-    private bool canAttack = true;
-    private bool canWalk = true;
-    private bool isInvulnerable = false;
-    private Vector3 movementVector;
-    private Vector3 controllerMovementVector;
-    private float currentHealth;
+    private Rigidbody rigidbody;
+    private Collider collider;
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        col = transform.GetComponentInChildren<Collider>();
-        animator = GetComponentInChildren<EntityAnimator>();
-        debugText = GetComponentInChildren<Text>();
-        currentHealth = maxHealth;
+        rigidbody = GetComponent<Rigidbody>();
+        collider = transform.GetComponentInChildren<Collider>();
     }
 
-    private void FixedUpdate()
-    {
-        if (canWalk)
+
+
+    /*  ENTITY CLASS PLANNING AND ORGANIZATION
+     
+        To issue a command to EntityComponents:
+        if (otherEntity.TryGetComponent (out EntityAnimator animator))
         {
-            SetVelocity(controllerMovementVector, walkSpeed);
-            SetRotation();
-            SetWalkAnimation();
+             animator.Animate(EntityAnimator.Anim.Walk);
         }
 
-        // Weightier drop
-        if (rb.velocity.y < 0)
-        {
-            rb.velocity += Vector3.up * Physics.gravity.y * (1.5f) * Time.fixedDeltaTime;
-        }
-    }
 
 
 
-    /************** Commands To Be Issued By Controller *****************/
+        [ ] Entity.cs				EntityContainer Data, Rigidbody, Collider, Anything that ALL Entities share
 
-    public void CommandSetMovementVector(Vector3 mv)
-    {
-        controllerMovementVector = mv;
-    }
+        [ ] EntityTileObject.cs     These objects are saved and loaded in the world grid. They are usually(?) static. (What about moving blocks? Spawnable Object?)
+        [ ] EntitySpawnedObject.cs  An object spawned by a TileObject, holds a reference to its spawner.
+        [ ] EntitySpawner.cs        A TileObject that spawns a SpawnedObject. Holds a list of its SpawnedObjects, so it can clear its spawned, or know whether or not to spawn a new one, etc.
+        [ ] EntityTerrain.cs        Tile Object that checks its Tile neighbors for similar terrain, in order to determine model. Has "health" that can be chipped away etc for curved/slanted blocks etc.
+        [ ] EntityLiquid.cs         Water/Lava etc: Checks for neighbor liquids, can flow into waterfalls, etc. Potentially a dynamic flowing and pooling system.
 
-    public void CommandAttack()
-    {
-        if (canAttack && !isAttacking)
-        {
-            StartCoroutine(Attack());
-        }
-    }
+        [ ] EntityController.cs		Player, AI, or Inanimate if not included
+        [ ] EntitySentience.cs		Dynamic Relation to Others: Alignment, Disposition, Threat, Braveness (Tied to EntityController? Any reason they are not exclusive to each other?)
+            Cases:
+            An object that AI are afraid of or will attack, even if that object is inanimate.
+            Braveness only applies to AI; not Player or Inanimate. Disposition can be applied to player or AI, not Inanimate. Alignment and Threat can be applied to any.
+                Sentience is mainly used for AI, to determine how to act.
+                Sentience for player uses disposition simply to prevent friendly fire.
+                Otherwise, Sentience for players and inanimate is only used for AI to interact with in their decision making process.
 
-    public void CommandJump()
-    {
-        if (IsGrounded() && (!isAttacking))
-        {
-            rb.velocity = Vector3.up * jumpPower;
-        }
-    }
+        [ ] EntityAnimator.cs		Animations
+        [?] EntityLitByShader.cs       Is lit by the lighting shader.
 
-    public void CommandTerminateJump()
-    {
-        // Weightier drop part 2
-        if (rb.velocity.y > 0)
-        {
-            //rb.velocity += Vector3.up * Physics.gravity.y * (1f) * Time.fixedDeltaTime;
-        }
-    }
+        [ ] EntityDestructable.cs		Mortality: Health, Taking Damage, Dieing, Death can spawn an Effect Entity
+        [ ] EntityReactToForces.cs		Pushback from Attacks, Exlosions, etc.
 
-    public void CommandSufferPushback(Vector3 pushFrom)
-    {
-        StartCoroutine(SufferPushback(transform.position - pushFrom));
-    }
+        [~] EntityTalk.cs			Ability to hold or generate messages and display them in a chat bubble. Players, AI, Signs, etc.
+        [ ] EntityAttack.cs			Attacking: Strength, Length, isAttacking, canAttack, Attack(), HurtOnTouch()
+        [ ] EntityWalk.cs			Walking: Walkspeed, canWalk, movementVector, controllerMovementVector
+        [~] EntityJump.cs			Jumping: Jump Power, Jump()
+        [?] EntitySwim				Float in water, sink, or swim
+        [?] EntityFly				Float in air or fly
 
+        [~] EntityHoldable.cs		Can be picked up by someone with CarryOther
+        [~] EntityCanHold.cs		Can hold Carryables. Can pick up, set down, and throw Carryables	(Inanimate can be a barrel that holds resource Entities)
+        [?] EntityPickupable.cs		Pickupable item such as coins or hearts
+        [?] EntityCanPickup.cs		Pickup items that are Pickupable.
+        [?] EntityPushable.cs		Objects that can be pushed or pulled, such as a crate.
+        [?] EntityCanPush.cs		Can push pushable objects.
 
+        [?] EntityToolUser.cs		Can use tools: Axe, pickaxe, hoe, fishingrod, etc.
+        [?] EntityWeaponUser.cs		Can equip and use weapons (Tied to EntityAttack?)
+        [?] EntityArmorUser.cs		Can equip armor (Tied to EntityMortal?)
+        [?] EntityInventory.cs		Has an internal inventory of items (May not be a mechanic in this game?)
 
-    /************** Getters *****************/
-
-    public Vector3 GetMovementVector()
-    {
-        return movementVector;
-    }
-
-    public Alignment GetAlignment()
-    {
-        return alignment;
-    }
-
-    public Disposition GetDisposition(Alignment towardsAlignment)
-    {
-        switch (towardsAlignment)
-        {
-            case Alignment.Civilized: return dispositionCivilized;
-            case Alignment.Monster: return dispositionMonster;
-            case Alignment.Player: return dispositionPlayer;
-            default: return Disposition.Neutral;
-        }
-    }
-
-    public bool IsVulnerable()
-    {
-        return !isInvulnerable;
-    }
-
-    private bool IsGrounded()
-    {
-        return Physics.CheckCapsule(
-            col.bounds.center,
-            new Vector3(col.bounds.center.x, col.bounds.min.y - 0.1f, col.bounds.center.z),
-            0.3f,
-            LayerMask.GetMask("Environment"));
-    }
-
-    public float GetCurrentHealth()
-    {
-        return currentHealth;
-    }
-
-    public float GetMaxHealth()
-    {
-        return maxHealth;
-    }
-
-    public float GetThreatLevel()
-    {
-        return threatLevel;
-    }
-
-    public float GetThreatBraveness()
-    {
-        return threatBraveness;
-    }
+        [?] EntityGeneratePower.cs	Generates power somehow.
+        [?] EntityUsePower.cs		Accepts power and creates an effect, ie: message, change block.
+        [?] EntityTransferPower.cs	Transfers power from A to B.
 
 
+            Entity Possibilities:
+			Characters (Player, NPC, Enemies)
+			Dynamic Carryable Objects (Pots, Resources, Crops, Bombs)
+			Attacks (Swipe, Explosion, Arrow)
+			Dropped pickup items (coins, hearts)
+			Pushable objects such as crates
+			Power producers, conducters, and users, such as buttons, wires, and gates.
 
-    /************** Setters *****************/
+			Entity Component Interface:
+			- Commands can be issued to Entity.cs, which will pass it on to a relevant component if it exists
+			- Command examples: entity.Damage(amount); entity.Walk(direction, speed); entity.Destroy(); entity.Animate(Anim);
 
-    private void SetVelocity(Vector3 vector, float speed)
-    {
-        movementVector = vector.normalized;
-        rb.velocity = new Vector3(
-            movementVector.x * speed * Time.deltaTime,
-            rb.velocity.y,
-            movementVector.z * speed * Time.deltaTime);
-    }
+            Entity Factory:
+            Attach components per Entity, not all Entities need to Jump, or Attack, or even Move
+            Have default constructor method for basic entity types, such as humanoid who all share the same components
+            Entities should be able to function with or without any component, commands that are irrelevant are just ignored
+    */
 
-    private void SetRotation()
-    {
-        if (System.Math.Abs(movementVector.x) > 0 || System.Math.Abs(movementVector.z) > 0)
-        {
-            transform.forward = movementVector.normalized;
-        }
-    }
-
-    private void SetWalkAnimation()
-    {
-        if (movementVector.x == 0 && movementVector.z == 0)
-        {
-            animator.AnimateStand();
-        }
-        else
-        {
-            animator.AnimateWalk();
-        }
-    }
-
-    public void SetDebugText(string text)
-    {
-        if (debugText != null)
-        {
-            debugText.text = text;
-        }
-    }
-
-
-
-    /************** Attacking *****************/
-
-    private IEnumerator Attack()
-    {
-        isAttacking = true;
-        canAttack = false;
-        canWalk = false;
-        animator.AnimateAttack();
-        SetVelocity(Vector3.zero, 0f);
-
-        GameObject obj = Instantiate(Resources.Load("Pfb_Effects/Pfb_Effect_Swipe") as GameObject, transform);
-        obj.GetComponent<Swipe>().SetOriginEntity(this);
-        if (GetComponent<AIController>() != null)
-        {
-            obj.GetComponent<Swipe>().SetTargets(GetComponent<AIController>().GetNearbyEnemiesAndHostiles(this));
-        }
-        else
-        {
-            obj.GetComponent<Swipe>().SetDamageAny(true);
-        }
-
-        yield return new WaitForSeconds(attackLength);
-
-        isAttacking = false;
-        canAttack = true;
-        canWalk = true;
-        animator.AnimateStand();
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        HurtEntityOnTouch(collision);
-    }
-
-    private void HurtEntityOnTouch(Collision collision)
-    {
-        Entity touchedEntity = collision.collider.GetComponentInParent<Entity>();
-        if (touchedEntity != null)
-        {
-            if (GetComponent<AIController>() != null)
-            {
-                if (GetComponent<AIController>().GetNearbyEnemiesAndHostiles(this).Contains(touchedEntity))
-                {
-                    if (touchedEntity.GetComponent<AIController>() != null)
-                    {
-                        touchedEntity.TriggerEventDamagedByEntity(this);
-                    }
-                    touchedEntity.ModifyHealth(-10f);
-                    touchedEntity.CommandSufferPushback(transform.position);
-                }
-            }
-        }
-    }
-
-
-
-    /************** Taking Damage *****************/
-
-    public IEnumerator SufferPushback(Vector3 pushbackVector)
-    {
-        canWalk = false;
-        canAttack = false;
-        isInvulnerable = true;
-        SetVelocity(pushbackVector, pushbackSpeed);
-        animator.AnimateHurt();
-
-        if (currentHealth <= 0)
-        {
-            GameObject obj = Instantiate(Resources.Load("Pfb_Effects/Pfb_Effect_Death") as GameObject, transform.position, Quaternion.identity);
-            obj.GetComponent<FollowTarget>().SetTarget(this.transform);
-        }
-
-        yield return new WaitForSeconds(pushbackTime);
-
-        SetVelocity(pushbackVector, 0);
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-
-        yield return new WaitForSeconds(stunTime);
-
-        canWalk = true;
-        canAttack = true;
-
-        yield return new WaitForSeconds(invulnerableTime);
-
-        isInvulnerable = false;
-    }   
-
-    public void ModifyHealth(float amount)
-    {
-        currentHealth += amount;
-
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-    }
-
-    public void TriggerEventDamagedByEntity(Entity e)
-    {
-        eventDamagedByEntity.Invoke(e);
-    }
-
-    private void Die()
-    {
-        Destroy(gameObject);
-    }
 }
+
+

@@ -62,21 +62,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\ConsoleCommand.cs" />
-    <Compile Include="Assets\Scripts\Destructable.cs" />
-    <Compile Include="Assets\Scripts\Entity\AI_Behavior.cs" />
-    <Compile Include="Assets\Scripts\Entity\AI_Chase.cs" />
-    <Compile Include="Assets\Scripts\Entity\AI_ChaseAndSwipe.cs" />
-    <Compile Include="Assets\Scripts\Entity\AI_Run.cs" />
-    <Compile Include="Assets\Scripts\Entity\AI_Wander.cs" />
-    <Compile Include="Assets\Scripts\Entity\AIController.cs" />
-    <Compile Include="Assets\Scripts\Entity\CameraController.cs" />
     <Compile Include="Assets\Scripts\Entity\Entity.cs" />
-    <Compile Include="Assets\Scripts\Entity\EntityScan.cs" />
-    <Compile Include="Assets\Scripts\Entity\FollowTarget.cs" />
-    <Compile Include="Assets\Scripts\Entity\P2_JumpIn.cs" />
-    <Compile Include="Assets\Scripts\Entity\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\Entity\Swipe.cs" />
+    <Compile Include="Assets\Scripts\GameObjects\Block.cs" />
+    <Compile Include="Assets\Scripts\GameObjects\Destructable.cs" />
+    <Compile Include="Assets\Scripts\GameObjects\ObjectData.cs" />
     <Compile Include="Assets\Scripts\Graphics\AnimateOnce.cs" />
     <Compile Include="Assets\Scripts\Graphics\AnimateUV.cs" />
     <Compile Include="Assets\Scripts\Graphics\AnimationAutoDestroy.cs" />
@@ -92,12 +81,44 @@
     <Compile Include="Assets\Scripts\Graphics\RandomStretch.cs" />
     <Compile Include="Assets\Scripts\Graphics\RandomTilt.cs" />
     <Compile Include="Assets\Scripts\Graphics\SpriteFlip.cs" />
-    <Compile Include="Assets\Scripts\World Gen\HeightmapGenerator.cs" />
-    <Compile Include="Assets\Scripts\World Gen\Old World Gen\Tile.cs" />
-    <Compile Include="Assets\Scripts\World Gen\Old World Gen\WorldGen_OLD.cs" />
-    <Compile Include="Assets\Scripts\World Gen\World.cs" />
-    <Compile Include="Assets\Scripts\World Gen\WorldGenerator.cs" />
-    <Compile Include="Assets\Scripts\World Gen\WorldLoader.cs" />
+    <Compile Include="Assets\Scripts\Math\MovementVectorCameraConverter.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AI_Behavior.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AI_Chase.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AI_ChaseAndSwipe.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AI_Run.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AI_Wander.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\AIController.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\CameraController.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\EntityOLD.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\EntityScan.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\FollowTarget.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\P2_JumpIn.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Old Entity\Swipe.cs" />
+    <Compile Include="Assets\Scripts\Program\ConsoleCommand.cs" />
+    <Compile Include="Assets\Scripts\Program\GodToolPlaceObjects.cs" />
+    <Compile Include="Assets\Scripts\Program\Resource.cs" />
+    <Compile Include="Assets\Scripts\Program\Startup.cs" />
+    <Compile Include="Assets\Scripts\World\Old World Gen\HeightmapGenerator.cs" />
+    <Compile Include="Assets\Scripts\World\Old World Gen\World.cs" />
+    <Compile Include="Assets\Scripts\World\Old World Gen\WorldGenerator.cs" />
+    <Compile Include="Assets\Scripts\World\Old World Gen\WorldLoader.cs" />
+    <Compile Include="Assets\Scripts\World\Older World Gen\Tile_OLD.cs" />
+    <Compile Include="Assets\Scripts\World\Older World Gen\WorldGen_OLD.cs" />
+    <Compile Include="Assets\Scripts\World\Tile.cs" />
+    <Compile Include="Assets\Scripts\World\WorldController.cs" />
+    <Compile Include="Assets\Scripts\World\WorldDataContainer.cs" />
+    <Compile Include="Assets\Scripts\World\WorldDataGenerator.cs" />
+    <Compile Include="Assets\Scripts\World\WorldDataLoader.cs" />
+    <Compile Include="Assets\Scripts\World\WorldDataSaver.cs" />
+    <Compile Include="Assets\Scripts\World\WorldObjectContainer.cs" />
+    <Compile Include="Assets\Scripts\World\WorldObjectFactory.cs" />
+    <Compile Include="Assets\Scripts\World\WorldObjectManager.cs" />
+    <None Include="Assets\Notes\ECS Conversion.txt" />
+    <None Include="Assets\Notes\TerrainIdeas.txt" />
+    <None Include="Assets\Notes\GameDesignDoc.txt" />
+    <None Include="Assets\Notes\DevLog.txt" />
+    <None Include="Assets\Notes\Todo.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Dropbox/Unity.TheGame.3.2019/TheGame/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

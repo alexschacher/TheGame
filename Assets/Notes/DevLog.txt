@@ -1,0 +1,54 @@
+	
+	4/7/20
+	[X] Goal: Implement collision between characters and walls.
+		[X] Properly add Mass to Entities in Pure ECS
+
+	4/6/20
+	[X] Goal: Design and implement PlayerInput, CharacterController, and Movement components and systems.
+		[X] PlayerInput Component stores: IntendedMovementDir
+		[X] PlayerInputSystem: Take entities with PlayerInput, apply info to CharacterController Component
+		[X] CharacterControlMover stores: IntendedMovementDir
+		[X] CharacterControlMoverSystem: Take entities with CompCharControl and apply info to Movement
+		[X] CompMover stores: IntendedMovementDir, Speed
+		[X] SysMovement: Apply CompMover values to PhysicsVelocity
+	[X] Add Colliders to Entities in Pure ECS
+
+	4/5/20
+	[X] Goal: Make a new project to begin converting project to ECS.
+	[X] Goal: Define current systems and components to be carried over.
+	Created EntityFactory
+	Transferred Resources Loader class
+	Got entities to spawn at various coordinates and display their loaded mesh and material
+
+	4/4/20
+	Investigate and Researched Unity ECS
+	Decided to make the commitment to make the switch, for better future development including multiplayer integration.
+
+	4/3/20
+	Investigate Marching Cubes
+	Testing Marching Cubes Model Project
+
+	4/2/20
+	More Entity Design Consideration
+	Entity Components Diagram
+	Game Design Doc - Construction
+
+	4/1/20
+    Examined Entity Class, planned out Entity refactoring and EntityFactory
+    Game Design Doc - Inspirations
+	Improved look of Highlight Block & height indicator
+	Game Design Doc - Game Loops
+
+	=========================================================================================================================================================================================================================================================
+
+    3/31/20
+    Created Startup Class, organizing order of startup operations
+    Created Program prefab, organizing highest level operations within
+    Added Tree to Tile.IDs and ObjectFactory
+    Added Grass to Tile.IDs and ObjectFactory
+    Created IsBlock() method to Tile.ID
+    Modified Block class to recognize any block as neighboring blocks using Tile.IsBlock()
+    Modified Highlight block Model and Material to be a purple cubes
+    Duplicated Highlight block model to visualize height better
+    Adding charAnims to be loaded and created in Resource
+    Modified EntityAnimator class to use Resource sourced charAnims
